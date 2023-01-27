@@ -1,18 +1,9 @@
 <launch>
 
   <group ns="$(arg veh)">
-
-    <node pkg="my_package" type="my_publisher_node.py" name="my_publisher_node_1" output="screen"/>
-    <node pkg="my_package" type="my_publisher_node.py" name="my_publisher_node_2" output="screen"/>
-
-    <node pkg="my_package" type="my_subscriber_node.py" name="my_subscriber_node_1"  output="screen">
-        <remap from="~/chatter" to="/$(arg veh)/my_publisher_node_1/chatter"/>
+    <node pkg="my_package" type="my_camera_node.py" name="my_camera_node"  output="screen">
+        <remap from="~/cam" to="/$(arg veh)/camera_node/image/compressed" />
     </node>
-
-    <node pkg="my_package" type="my_subscriber_node.py" name="my_subscriber_node_2"  output="screen">
-        <remap from="~/chatter" to="/$(arg veh)/my_publisher_node_2/chatter"/>
-    </node>
-
    </group>
 
 </launch>
