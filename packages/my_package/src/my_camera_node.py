@@ -40,11 +40,6 @@ class MyCameraNode(DTROS):
         rate = rospy.Rate(1) # 1Hz
         while not rospy.is_shutdown():
             if self.image is not None:
-                # image = cast(np.ndarray, self.image)
-                # image_msg = CompressedImage()
-                # image_msg.header.stamp = rospy.Time.now()
-                # image_msg.format = "jpeg"
-                # image_msg.data = image.tobytes()
                 img=cv2.flip(self.image,0)
                 image_msg = self._bridge.cv2_to_compressed_imgmsg(img, dst_format="jpeg")
                 rospy.loginfo("Publishing modified image.")

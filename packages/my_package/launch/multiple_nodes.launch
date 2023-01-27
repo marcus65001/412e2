@@ -1,8 +1,10 @@
 <launch>
 
   <group ns="$(arg veh)">
-    <node pkg="my_package" type="my_camera_node.py" name="my_camera_node"  output="screen">
-        <remap from="~/cam" to="/$(arg veh)/camera_node/image/compressed" />
+    <node pkg="my_package" type="odometry_node.py" name="my_odometry_node"  output="screen">
+        <remap from="~/tick_l" to="/$(arg veh)/left_wheel_encoder_node/tick" />
+        <remap from="~/tick_r" to="/$(arg veh)/right_wheel_encoder_node/tick" />
+        <remap from="~/cmd" to="/$(arg veh)/wheels_driver_node/wheels_cmd_executed" />
     </node>
    </group>
 
