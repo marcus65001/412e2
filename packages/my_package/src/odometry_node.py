@@ -32,7 +32,7 @@ class OdometryNode(DTROS):
         self.pub_integrated_distance_right = rospy.Publisher("dist_r",Float32)
 
         # bag
-        self.bag=rosbag.Bag("encoder.bag","w")
+        self.bag=rosbag.Bag("/data/bags/encoder.bag","w")
 
         self.log("Initialized")
 
