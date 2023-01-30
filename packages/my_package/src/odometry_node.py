@@ -4,7 +4,7 @@ import os
 import rospy
 from duckietown.dtros import DTROS, NodeType, TopicType, DTParam, ParamType
 from duckietown_msgs.msg import Twist2DStamped, WheelEncoderStamped, WheelsCmdStamped
-from std_msgs.msg import Header, Float32
+from std_msgs.msg import Header, Float32, Int32
 import rosbag
 
 
@@ -22,17 +22,17 @@ class OdometryNode(DTROS):
         # Get static parameters
         self._radius = rospy.get_param(f'/{self.veh_name}/kinematics_node/radius', 100)
 
+        # bag
+        self.bag=rosbag.Bag("/data/bags/encoder.bag", "w")
+
         # Subscribing to the wheel encoders
         self.sub_encoder_ticks_left = rospy.Subscriber("~tick_l", WheelEncoderStamped, self.cb_enc_l)
         self.sub_encoder_ticks_right = rospy.Subscriber("~tick_r",WheelEncoderStamped, self.cb_enc_r)
-        self.sub_executed_commands = rospy.Subscriber("~cmd", WheelsCmdStamped)
+        self.sub_executed_commands = rospy.Subscriber("~cmd", WheelsCmdStamped, self.cb_executed_commands)
 
         # Publishers
         self.pub_integrated_distance_left = rospy.Publisher("dist_l",Float32)
         self.pub_integrated_distance_right = rospy.Publisher("dist_r",Float32)
-
-        # bag
-        self.bag=rosbag.Bag("/data/bags/encoder.bag","w")
 
         self.log("Initialized")
 
@@ -44,11 +44,13 @@ class OdometryNode(DTROS):
         """ Update encoder distance information from ticks.
         """
         if wheel=="l":
-            ltick=msg.data
-            self.bag.write("tick_l",msg)
+            ltick=Int32()
+            ltick.data=msg.data
+            self.bag.write("tick_l",ltick)
         else:
-            rtick=msg.data
-            self.bag.write("tick_r", msg)
+            rtick = Int32()
+            rtick.data = msg.data
+            self.bag.write("tick_r", rtick)
 
     def cb_executed_commands(self, msg):
         """ Use the executed commands to determine the direction of travel of each wheel.
@@ -56,8 +58,6 @@ class OdometryNode(DTROS):
         self.bag.write("wheels_cmd_executed", msg)
 
     def on_shutdown(self):
-        for topic, msg, t in self.bag.read_messages(topics=['tick_l', 'tick_r', "wheels_cmd_executed"]):
-            print(topic,msg)
         self.bag.close()
 
 
